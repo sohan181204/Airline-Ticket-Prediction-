@@ -1,0 +1,45 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By from selenium.webdriver.common.keys import Keys import time
+import pandas as pd
+
+# Initialize the WebDriver
+driver = webdriver.Chrome(executable_path='path/to/chromedriver') # Update path
+
+# Open the airline search website
+url = "https://www.example-airline-website.com" driver.get(url)
+
+# Interact with the search form
+origin = driver.find_element(By.ID, 'origin') destination = driver.find_element(By.ID, 'destination')
+departure_date = driver.find_element(By.ID, 'departure-date') return_date = driver.find_element(By.ID, 'return-date')
+
+# Fill in the form origin.send_keys('New York') destination.send_keys('San Francisco') departure_date.send_keys('2024-10-01') return_date.send_keys('2024-10-15')
+search_button = driver.find_element(By.ID, 'search-button') search_button.click()
+
+# Wait for results to load time.sleep(10)
+
+# Extract flight data flights = []
+flight_elements = driver.find_elements(By.CLASS_NAME, 'flight-class') # Update class name accordingly
+for flight in flight_elements:
+airline = flight.find_element(By.CLASS_NAME, 'airline-name').text price = flight.find_element(By.CLASS_NAME, 'price').text duration = flight.find_element(By.CLASS_NAME, 'duration').text
+departure_time = flight.find_element(By.CLASS_NAME, 'departure-time').text arrival_time = flight.find_element(By.CLASS_NAME, 'arrival-time').text
+stops = flight.find_element(By.CLASS_NAME, 'stops').text
+travel_class = flight.find_element(By.CLASS_NAME, 'travel-class').text source_city = flight.find_element(By.CLASS_NAME, 'source-city').text destination_city = flight.find_element(By.CLASS_NAME, 'destination-city').text
+flights.append({ 'airline': airline, 'price': price, 'duration': duration,
+'departure_time': departure_time, 'arrival_time': arrival_time
+'stops': stops,
+'class': travel_class, 'source_city': source_city,
+'destination_city': destination_city
+})
+
+# Close the WebDriver driver.quit()
+
+# Convert to DataFrame
+df = pd.DataFrame(flights)
+
+# Clean up price column by removing currency symbols and converting to float df['price'] = df['price'].replace('[\$,]', '', regex=True).astype(float)
+
+# Save the DataFrame to a CSV file for future use df.to_csv(r"C:\Users\heyit\Desktop\Airline Data\Dataset\Indian Airlines.csv", index=False)
+
+# Proceed with analysis as before
+
+
